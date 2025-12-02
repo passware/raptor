@@ -27,10 +27,21 @@ SET(CMAKE_INCLUDE_CURRENT_DIR 1)
 
 # Third-party libraries/dependencies
 
-FIND_PACKAGE(CURL)
-FIND_PACKAGE(LibXml2)
-FIND_PACKAGE(LibXslt)
+OPTION(WITH_CURL "Build with CURL" ON)
+OPTION(WITH_XSLT "Build with Xslt" ON)
+OPTION(WITH_WWW "Build with HTTP support" ON)
+
+if(${WITH_CURL})
+  FIND_PACKAGE(CURL)
+endif(${WITH_CURL})
+
+if(${WITH_XSLT})
+  FIND_PACKAGE(LibXslt)
+endif(${WITH_XSLT})
+
+
 #FIND_PACKAGE(YAJL)
+FIND_PACKAGE(LibXml2 REQUIRED)
 FIND_PACKAGE(Perl REQUIRED)
 FIND_PACKAGE(BISON 3.4 REQUIRED)
 FIND_PACKAGE(FLEX 2.5.19 REQUIRED)
@@ -61,6 +72,7 @@ INCLUDE(CheckFunctionExists)
 INCLUDE(CheckTypeSize)
 INCLUDE(CheckStructHasMember)
 INCLUDE(CheckCSourceCompiles)
+include(CheckSymbolExists)
 
 CHECK_INCLUDE_FILE(errno.h	HAVE_ERRNO_H)
 CHECK_INCLUDE_FILE(fcntl.h	HAVE_FCNTL_H)
@@ -115,8 +127,8 @@ IF(LIBXML2_FOUND)
 	SET(CMAKE_REQUIRED_INCLUDES  ${LIBXML2_INCLUDE_DIR})
 	SET(CMAKE_REQUIRED_LIBRARIES ${LIBXML2_LIBRARIES})
 
-	CHECK_FUNCTION_EXISTS(xmlCtxtUseOptions     HAVE_XMLCTXTUSEOPTIONS)
-	CHECK_FUNCTION_EXISTS(xmlSAX2InternalSubset HAVE_XMLSAX2INTERNALSUBSET)
+	CHECK_SYMBOL_EXISTS(xmlCtxtUseOptions     "libxml/parser.h" HAVE_XMLCTXTUSEOPTIONS)
+	CHECK_SYMBOL_EXISTS(xmlSAX2InternalSubset "libxml/SAX2.h" HAVE_XMLSAX2INTERNALSUBSET)
 
 	CHECK_STRUCT_HAS_MEMBER(
 		xmlEntity
@@ -193,12 +205,14 @@ IF(RAPTOR_XML STREQUAL "libxml")
 ENDIF(RAPTOR_XML STREQUAL "libxml")
 
 SET(RAPTOR_WWW_INIT none)
-IF(LIBXML2_FOUND)
-	SET(RAPTOR_WWW_INIT xml)
-ENDIF(LIBXML2_FOUND)
-IF(CURL_FOUND)
-	SET(RAPTOR_WWW_INIT curl)
-ENDIF(CURL_FOUND)
+IF(${WITH_WWW})
+	IF(LIBXML2_FOUND)
+		SET(RAPTOR_WWW_INIT xml)
+	ENDIF(LIBXML2_FOUND)
+	IF(CURL_FOUND)
+		SET(RAPTOR_WWW_INIT curl)
+	ENDIF(CURL_FOUND)
+endif(${WITH_WWW})
 
 SET(RAPTOR_WWW ${RAPTOR_WWW_INIT} CACHE STRING
 	"Which WWW library to use (any of \"curl\", \"xml\", \"none\").")
@@ -315,6 +329,8 @@ message( "  *** Bison                       ${BISON_EXECUTABLE}")
 message( "  *** Flex                        ${FLEX_EXECUTABLE}")
 message( "  *** libxml2 (lib)               ${LIBXML2_LIBRARIES}")
 message( "  *** libxml2 (include)           ${LIBXML2_INCLUDE_DIR}")
+message( "      libcurl (include)           ${CURL_INCLUDE_DIRS}")
+message( "      libxslt (include)           ${LIBXSLT_INCLUDE_DIRS}")
 
 ################################################################
 
