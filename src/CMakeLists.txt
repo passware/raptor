@@ -39,7 +39,7 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
     COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y)
 
-  ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
+  ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
     DEPENDS turtle_tables_tgt)
@@ -167,7 +167,7 @@ IF(RAPTOR_PARSEDATE)
     COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y)
 
-  ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
+  ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
     DEPENDS parsedate_tables_tgt)
